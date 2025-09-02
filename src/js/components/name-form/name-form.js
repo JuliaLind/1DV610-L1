@@ -39,10 +39,18 @@ customElements.define('name-form',
             this.#form = this.shadowRoot.querySelector('form')
         }
 
+        /**
+         * Called when the element is added to the document.
+         */
         connectedCallback() {
             this.#form.addEventListener('submit', this.#onSubmit)
         }
 
+        /**
+         * Handles the form submission.
+         *
+         * @param {SubmitEvent} event - the submit event fired when the form is submitted.
+         */
         #onSubmit = (event) => {
             event.preventDefault()
             const formData = new FormData(this.#form)
@@ -51,6 +59,20 @@ customElements.define('name-form',
                 detail: { name },
                 bubbles: true
             }))
+        }
+
+        /**
+         * Called when the element is removed from the document.
+         */
+        disconnectedCallback() {
+            this.#form.removeEventListener('submit', this.#onSubmit)
+        }
+
+        /**
+         * Clears the form.
+         */
+        clear() {
+            this.#form.reset()
         }
     })
 
