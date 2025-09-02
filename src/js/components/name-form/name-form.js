@@ -13,12 +13,17 @@ template.innerHTML = `
     * {
       box-sizing: border-box;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
   <form>
     <label for="name">What is your name?</label>
     <input type="text" id="name" name="name" required />
     <button type="submit">Submit</button>
   </form>
+  <hello-box class="hidden"></hello-box>
 `
 
 customElements.define('name-form',
@@ -27,6 +32,9 @@ customElements.define('name-form',
      */
     class extends HTMLElement {
         #form
+        #helloBox
+        #name
+        #abortController = new AbortController()
 
         /**
          * Creates an instance of current class.
@@ -37,13 +45,22 @@ customElements.define('name-form',
             this.attachShadow({ mode: 'open' })
                 .append(template.content.cloneNode(true))
             this.#form = this.shadowRoot.querySelector('form')
+            this.#helloBox = this.shadowRoot.querySelector('hello-box')
+            this.#name = this.shadowRoot.querySelector('#name')
         }
 
         /**
          * Called when the element is added to the document.
          */
         connectedCallback() {
-            this.#form.addEventListener('submit', this.#onSubmit)
+            this.#form.addEventListener('submit', this.#onSubmit,
+                {
+                    signal: this.#abortController.signal
+                })
+            this.#helloBox.addEventListener('close', this.#onClose,
+                {
+                    signal: this.#abortController.signal
+                })
         }
 
         /**
@@ -53,26 +70,26 @@ customElements.define('name-form',
          */
         #onSubmit = (event) => {
             event.preventDefault()
-            const formData = new FormData(this.#form)
-            const name = formData.get('name')
-            this.dispatchEvent(new CustomEvent('submit', {
-                detail: { name },
-                bubbles: true
-            }))
+
+            this.#helloBox.setAttribute('name', this.#name.value)
+            this.#helloBox.classList.remove('hidden')
+        }
+
+        /**
+         * Called when the hello-box is closed.
+         *
+         * @param {CustomEvent} event - close event
+         */
+        #onClose = (event) => {
+            this.#helloBox.classList.add('hidden')
+            this.#form.reset()
         }
 
         /**
          * Called when the element is removed from the document.
          */
         disconnectedCallback() {
-            this.#form.removeEventListener('submit', this.#onSubmit)
-        }
-
-        /**
-         * Clears the form.
-         */
-        clear() {
-            this.#form.reset()
+            this.#abortController.abort()
         }
     })
 
