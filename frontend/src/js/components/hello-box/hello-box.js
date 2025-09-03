@@ -6,7 +6,7 @@
  */
 
 import { randomFromArray } from "./lib/functions.js"
-import { WebScraper } from "./lib/webscraper.js"
+
 
 const template = document.createElement('template')
 
@@ -40,7 +40,6 @@ customElements.define('hello-box',
         #greeting
         #name
         #info
-        #webScraper = new WebScraper()
 
         /**
          * Creates an instance of current class.
@@ -91,9 +90,8 @@ customElements.define('hello-box',
             return ['name']
         }
 
-        async #updateInfo(name) {
-            const info = await this.#webScraper.search(name)
-            this.#info.textContent = info || ''
+        updateInfo(newInfo) {
+            this.#info.textContent = newInfo || ''
         }
 
         /**
@@ -103,11 +101,10 @@ customElements.define('hello-box',
          * @param {any} oldValue the old attribute value.
          * @param {any} newValue the new attribute value.
          */
-        async attributeChangedCallback (name, oldValue, newValue) {
+        attributeChangedCallback (name, oldValue, newValue) {
             if (name === 'name') {
                 this.#name.textContent = newValue
                 this.#greeting.textContent = randomFromArray(this.#greetingOptions)
-                await this.#updateInfo(newValue)
             }
         }
 
