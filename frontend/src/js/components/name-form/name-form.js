@@ -11,8 +11,67 @@ template.innerHTML = `
   <style>
     :host,
     * {
-      box-sizing: border-box;
+        box-sizing: border-box;
     }
+
+    :host {
+      display: block;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: calc(var(--space) * 1.5);
+      transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+    }
+
+    :host(:focus-within) {
+      box-shadow: var(--shadow), 0 0 0 4px rgba(59,130,246,0.08);
+      transform: translateY(-1px);
+      border-color: rgba(59,130,246,0.35);
+    }
+
+    form {
+      display: grid;
+      gap: .75rem;
+    }
+
+    label {
+      font-weight: 600;
+      font-size: .95rem;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: .7rem .85rem;
+      font-size: 1rem;
+      border: 1px solid var(--border);
+      border-radius: .75rem;
+      background: #fff;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s ease, box-shadow .15s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      box-shadow: var(--focus-ring);
+    }
+
+    button[type="submit"] {
+      padding: .75rem 1rem;
+      font-weight: 600;
+      border: 0;
+      border-radius: .75rem;
+      background: var(--primary);
+      color: #fff;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform .05s ease, background .15s ease, opacity .15s ease;
+    }
+
+    button[type="submit"]:hover { background: var(--primary-600); }
+    button[type="submit"]:active { transform: translateY(1px); }
+
   </style>
   <form>
     <label for="name">What is your name?</label>
@@ -70,7 +129,7 @@ customElements.define('name-form',
         }
 
 
-        reset () {
+        reset() {
             this.#form.reset()
         }
 

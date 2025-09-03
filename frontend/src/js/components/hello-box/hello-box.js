@@ -12,17 +12,79 @@ const template = document.createElement('template')
 
 template.innerHTML = `
     <style>
-        :host,
+    :host,
         * {
-        box-sizing: border-box;
+            box-sizing: border-box;
         }
+
+    :host {
+        display: block;
+    }
+
+.card {
+      background: var(--card-bg);
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: calc(var(--space) * 1.5);
+      max-width: 480px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    header {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    #close-btn {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      font-size: 1.2rem;
+      line-height: 1;
+      padding: .4rem .6rem;
+      border-radius: .5rem;
+      cursor: pointer;
+      transition: background .15s ease, transform .05s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .greeting {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary-600);
+      margin: 0.5rem 0 0;
+      text-align: center;
+    }
+    .greeting p {
+      margin: 0;
+    }
+
+    #info {
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: var(--muted);
+      text-align: left;
+      width: 48rem;
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+    }
     </style>
     <div>
         <header>
             <button id="close-btn">✕</button>
         </header>
         <div>
-            <p><span id="greeting">Hello</span>, <span id="name"></span>!</p>
+            <p class="greeting"><span id="greeting">Hello</span>, <span id="name"></span>!</p>
         </div>
         <div>
             <p id="info"></p>
@@ -101,7 +163,7 @@ customElements.define('hello-box',
          * @param {any} oldValue the old attribute value.
          * @param {any} newValue the new attribute value.
          */
-        attributeChangedCallback (name, oldValue, newValue) {
+        attributeChangedCallback(name, oldValue, newValue) {
             if (name === 'name') {
                 this.#name.textContent = newValue
                 this.#greeting.textContent = randomFromArray(this.#greetingOptions)

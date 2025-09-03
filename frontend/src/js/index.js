@@ -12,13 +12,16 @@ function main() {
 
     nameForm.addEventListener('submit', async (event) => {
         helloBox.setAttribute('name', event.detail.name)
+        nameForm.classList.add('hidden')
         helloBox.classList.remove('hidden')
         const info = await backendService.search(event.detail.name)
         helloBox.updateInfo(info)
+
     })
 
     helloBox.addEventListener('close', () => {
         nameForm.reset()
+        nameForm.classList.remove('hidden')
         helloBox.classList.add('hidden')
         helloBox.updateInfo('')
     })
