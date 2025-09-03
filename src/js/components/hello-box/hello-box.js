@@ -6,6 +6,7 @@
  */
 
 import { randomFromArray } from "./lib/functions.js"
+import { WebScraper } from "./lib/webscraper.js"
 
 const template = document.createElement('template')
 
@@ -23,6 +24,9 @@ template.innerHTML = `
         <div>
             <p><span id="greeting">Hello</span>, <span id="name"></span>!</p>
         </div>
+        <div>
+            <p id="info"></p>
+        </div>
     </div>
 `
 
@@ -35,6 +39,8 @@ customElements.define('hello-box',
         #closeBtn
         #greeting
         #name
+        #info
+        #webScraper = new WebScraper()
 
         /**
          * Creates an instance of current class.
@@ -47,6 +53,7 @@ customElements.define('hello-box',
             this.#closeBtn = this.shadowRoot.querySelector('#close-btn')
             this.#greeting = this.shadowRoot.querySelector('#greeting')
             this.#name = this.shadowRoot.querySelector('#name')
+            this.#info = this.shadowRoot.querySelector('#info')
         }
 
         /**
@@ -62,6 +69,7 @@ customElements.define('hello-box',
          * @param {MouseEvent} event - the click event fired when the close button is clicked.
          */
         #onClose = (event) => {
+            this.#info.textContent = ''
             this.dispatchEvent(new CustomEvent('close', {
                 bubbles: true
             }))
@@ -83,6 +91,11 @@ customElements.define('hello-box',
             return ['name']
         }
 
+        async #updateInfo(name) {
+            const info = await this.#webScraper.search(name)
+            this.#info.textContent = info || ''
+        }
+
         /**
          * Called by the browser engine when an attribute changes.
          *
@@ -90,10 +103,11 @@ customElements.define('hello-box',
          * @param {any} oldValue the old attribute value.
          * @param {any} newValue the new attribute value.
          */
-        attributeChangedCallback (name, oldValue, newValue) {
+        async attributeChangedCallback (name, oldValue, newValue) {
             if (name === 'name') {
                 this.#name.textContent = newValue
                 this.#greeting.textContent = randomFromArray(this.#greetingOptions)
+                await this.#updateInfo(newValue)
             }
         }
 

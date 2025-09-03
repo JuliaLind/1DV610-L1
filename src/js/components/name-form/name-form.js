@@ -13,17 +13,13 @@ template.innerHTML = `
     * {
       box-sizing: border-box;
     }
-
-    .hidden {
-      display: none;
-    }
   </style>
   <form>
     <label for="name">What is your name?</label>
     <input type="text" id="name" name="name" required />
     <button type="submit">Submit</button>
   </form>
-  <hello-box class="hidden"></hello-box>
+
 `
 
 customElements.define('name-form',
@@ -32,7 +28,6 @@ customElements.define('name-form',
      */
     class extends HTMLElement {
         #form
-        #helloBox
         #name
         #abortController = new AbortController()
 
@@ -45,7 +40,6 @@ customElements.define('name-form',
             this.attachShadow({ mode: 'open' })
                 .append(template.content.cloneNode(true))
             this.#form = this.shadowRoot.querySelector('form')
-            this.#helloBox = this.shadowRoot.querySelector('hello-box')
             this.#name = this.shadowRoot.querySelector('#name')
         }
 
@@ -54,10 +48,6 @@ customElements.define('name-form',
          */
         connectedCallback() {
             this.#form.addEventListener('submit', this.#onSubmit,
-                {
-                    signal: this.#abortController.signal
-                })
-            this.#helloBox.addEventListener('close', this.#onClose,
                 {
                     signal: this.#abortController.signal
                 })
@@ -71,17 +61,16 @@ customElements.define('name-form',
         #onSubmit = (event) => {
             event.preventDefault()
 
-            this.#helloBox.setAttribute('name', this.#name.value)
-            this.#helloBox.classList.remove('hidden')
+            this.dispatchEvent(new CustomEvent('submit', {
+                detail: {
+                    name: this.#name.value
+                },
+                bubbles: true
+            }))
         }
 
-        /**
-         * Called when the hello-box is closed.
-         *
-         * @param {CustomEvent} event - close event
-         */
-        #onClose = (event) => {
-            this.#helloBox.classList.add('hidden')
+
+        reset () {
             this.#form.reset()
         }
 
