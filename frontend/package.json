@@ -1,5 +1,5 @@
 {
-  "name": "l1",
+  "name": "l1 frontend",
   "version": "1.0.0",
   "type": "module",
   "description": "",
@@ -24,8 +24,5 @@
   "devDependencies": {
     "@lnu/eslint-config": "^1.1.10",
     "vite": "^7.1.4"
-  },
-  "dependencies": {
-    "jsdom": "^26.1.0"
   }
 }
