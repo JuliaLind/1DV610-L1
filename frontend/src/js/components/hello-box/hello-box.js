@@ -5,8 +5,7 @@
  * @version 1.1.1
  */
 
-import { randomFromArray } from "./lib/functions.js"
-
+import { randomFromArray } from './lib/functions.js'
 
 const template = document.createElement('template')
 
@@ -93,81 +92,85 @@ template.innerHTML = `
 `
 
 customElements.define('hello-box',
+  /**
+   * Represents a hello-box element.
+   */
+  class extends HTMLElement {
+    #greetingOptions = ['Hello', 'Hi', 'Hey', 'Greetings', 'Hey there']
+    #closeBtn
+    #greeting
+    #name
+    #info
+
     /**
-     * Represents a hello-box element.
+     * Creates an instance of current class.
      */
-    class extends HTMLElement {
-        #greetingOptions = ['Hello', 'Hi', 'Hey', 'Greetings', 'Hey there']
-        #closeBtn
-        #greeting
-        #name
-        #info
+    constructor () {
+      super()
 
-        /**
-         * Creates an instance of current class.
-         */
-        constructor() {
-            super()
+      this.attachShadow({ mode: 'open' })
+        .append(template.content.cloneNode(true))
+      this.#closeBtn = this.shadowRoot.querySelector('#close-btn')
+      this.#greeting = this.shadowRoot.querySelector('#greeting')
+      this.#name = this.shadowRoot.querySelector('#name')
+      this.#info = this.shadowRoot.querySelector('#info')
+    }
 
-            this.attachShadow({ mode: 'open' })
-                .append(template.content.cloneNode(true))
-            this.#closeBtn = this.shadowRoot.querySelector('#close-btn')
-            this.#greeting = this.shadowRoot.querySelector('#greeting')
-            this.#name = this.shadowRoot.querySelector('#name')
-            this.#info = this.shadowRoot.querySelector('#info')
-        }
+    /**
+     * Called when the element is added to the document.
+     */
+    connectedCallback () {
+      this.#closeBtn.addEventListener('click', this.#onClose)
+    }
 
-        /**
-         * Called when the element is added to the document.
-         */
-        connectedCallback() {
-            this.#closeBtn.addEventListener('click', this.#onClose)
-        }
+    /**
+     * Handles the close button click.
+     *
+     * @param {MouseEvent} event - the click event fired when the close button is clicked.
+     */
+    #onClose = (event) => {
+      this.#info.textContent = ''
+      this.dispatchEvent(new CustomEvent('close', {
+        bubbles: true
+      }))
+    }
 
-        /**
-         * Handles the close button click.
-         *
-         * @param {MouseEvent} event - the click event fired when the close button is clicked.
-         */
-        #onClose = (event) => {
-            this.#info.textContent = ''
-            this.dispatchEvent(new CustomEvent('close', {
-                bubbles: true
-            }))
-        }
+    /**
+     * Called when the element is removed from the document.
+     */
+    disconnectedCallback () {
+      this.#closeBtn.removeEventListener('click', this.#onClose)
+    }
 
-        /**
-         * Called when the element is removed from the document.
-         */
-        disconnectedCallback() {
-            this.#closeBtn.removeEventListener('click', this.#onClose)
-        }
+    /**
+     * Attributes to monitor for changes.
+     *
+     * @returns {string[]} A string array of attributes to monitor.
+     */
+    static get observedAttributes () {
+      return ['name']
+    }
 
-        /**
-         * Attributes to monitor for changes.
-         *
-         * @returns {string[]} A string array of attributes to monitor.
-         */
-        static get observedAttributes() {
-            return ['name']
-        }
+    /**
+     * Displays the information about the name that has been received from backend.
+     *
+     * @param {string} newInfo - Information about the name that has been sent from the backend.
+     */
+    updateInfo (newInfo) {
+      this.#info.textContent = newInfo || ''
+    }
 
-        updateInfo(newInfo) {
-            this.#info.textContent = newInfo || ''
-        }
-
-        /**
-         * Called by the browser engine when an attribute changes.
-         *
-         * @param {string} name of the attribute.
-         * @param {any} oldValue the old attribute value.
-         * @param {any} newValue the new attribute value.
-         */
-        attributeChangedCallback(name, oldValue, newValue) {
-            if (name === 'name') {
-                this.#name.textContent = newValue
-                this.#greeting.textContent = randomFromArray(this.#greetingOptions)
-            }
-        }
-
-    })
+    /**
+     * Called by the browser engine when an attribute changes.
+     *
+     * @param {string} name of the attribute.
+     * @param {any} oldValue the old attribute value.
+     * @param {any} newValue the new attribute value.
+     */
+    attributeChangedCallback (name, oldValue, newValue) {
+      if (name === 'name') {
+        this.#name.textContent = newValue
+        this.#greeting.textContent = randomFromArray(this.#greetingOptions)
+      }
+    }
+  })

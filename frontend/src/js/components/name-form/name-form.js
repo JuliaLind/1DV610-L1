@@ -82,62 +82,63 @@ template.innerHTML = `
 `
 
 customElements.define('name-form',
+  /**
+   * Represents a name-form element.
+   */
+  class extends HTMLElement {
+    #form
+    #name
+    #abortController = new AbortController()
+
     /**
-     * Represents a name-form element.
+     * Creates an instance of current class.
      */
-    class extends HTMLElement {
-        #form
-        #name
-        #abortController = new AbortController()
+    constructor () {
+      super()
 
-        /**
-         * Creates an instance of current class.
-         */
-        constructor() {
-            super()
+      this.attachShadow({ mode: 'open' })
+        .append(template.content.cloneNode(true))
+      this.#form = this.shadowRoot.querySelector('form')
+      this.#name = this.shadowRoot.querySelector('#name')
+    }
 
-            this.attachShadow({ mode: 'open' })
-                .append(template.content.cloneNode(true))
-            this.#form = this.shadowRoot.querySelector('form')
-            this.#name = this.shadowRoot.querySelector('#name')
-        }
+    /**
+     * Called when the element is added to the document.
+     */
+    connectedCallback () {
+      this.#form.addEventListener('submit', this.#onSubmit,
+        {
+          signal: this.#abortController.signal
+        })
+    }
 
-        /**
-         * Called when the element is added to the document.
-         */
-        connectedCallback() {
-            this.#form.addEventListener('submit', this.#onSubmit,
-                {
-                    signal: this.#abortController.signal
-                })
-        }
+    /**
+     * Handles the form submission.
+     *
+     * @param {SubmitEvent} event - the submit event fired when the form is submitted.
+     */
+    #onSubmit = (event) => {
+      event.preventDefault()
 
-        /**
-         * Handles the form submission.
-         *
-         * @param {SubmitEvent} event - the submit event fired when the form is submitted.
-         */
-        #onSubmit = (event) => {
-            event.preventDefault()
+      this.dispatchEvent(new CustomEvent('submit', {
+        detail: {
+          name: this.#name.value
+        },
+        bubbles: true
+      }))
+    }
 
-            this.dispatchEvent(new CustomEvent('submit', {
-                detail: {
-                    name: this.#name.value
-                },
-                bubbles: true
-            }))
-        }
+    /**
+     * Empties the name-field.
+     */
+    reset () {
+      this.#form.reset()
+    }
 
-
-        reset() {
-            this.#form.reset()
-        }
-
-        /**
-         * Called when the element is removed from the document.
-         */
-        disconnectedCallback() {
-            this.#abortController.abort()
-        }
-    })
-
+    /**
+     * Called when the element is removed from the document.
+     */
+    disconnectedCallback () {
+      this.#abortController.abort()
+    }
+  })
