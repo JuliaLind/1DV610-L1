@@ -14,7 +14,6 @@ const controller = new Controller()
 router.get('/:name',
   (req, res, next) => controller.get(req, res, next))
 
-
 router.get('/',
   (req, res) => {
     res.status(200).json({
@@ -23,8 +22,6 @@ router.get('/',
     })
   })
 
-
 router.use((req, res, next) => {
   next(createError(404))
 })
-
