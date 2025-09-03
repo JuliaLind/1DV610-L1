@@ -75,7 +75,7 @@ template.innerHTML = `
   </style>
   <form>
     <label for="name">What is your name?</label>
-    <input type="text" id="name" name="name" required />
+    <input type="text" id="name" name="name" required autocomplete="off"/>
     <button type="submit">Submit</button>
   </form>
 
